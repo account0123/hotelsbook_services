@@ -8,5 +8,10 @@
     "name": "features.reviews.url",
     "type": "java.lang.String",
     "description": "URL to reviews microservice"
+  },
+  {
+    "name": "features.files.url",
+    "type": "java.lang.String",
+    "description": "URL for hotel images"
   }
 ]}

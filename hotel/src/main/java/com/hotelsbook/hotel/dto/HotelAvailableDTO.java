@@ -1,6 +1,7 @@
 package com.hotelsbook.hotel.dto;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.hotelsbook.hotel.entity.HotelAvailable;
 
@@ -52,6 +53,11 @@ public class HotelAvailableDTO {
 
     public String getPicture() {
         return picture;
+    }
+
+    public void setPicture(String picture) {
+        Objects.requireNonNull(picture);
+        this.picture = picture;
     }
 
     public String getStreet() {

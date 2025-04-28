@@ -2,6 +2,7 @@ package com.hotelsbook.hotel.dto;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.hotelsbook.hotel.entity.Hotel;
 
@@ -40,7 +41,7 @@ public class HotelDTO {
     public Date getAvailable() {
         return available;
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -59,6 +60,11 @@ public class HotelDTO {
 
     public String getPicture() {
         return picture;
+    }
+
+    public void setPicture(String picture) {
+        Objects.requireNonNull(picture);
+        this.picture = picture;
     }
 
     public String getStreet() {

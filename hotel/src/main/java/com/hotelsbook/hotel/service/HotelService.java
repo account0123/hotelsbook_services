@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
@@ -29,6 +30,9 @@ public class HotelService {
 
     @Autowired
     private HotelReviewClient reviewClient;
+
+    @Value("${features.files.url}")
+    private String filesUrl;
 
     private static final Logger logger = LoggerFactory.getLogger(HotelService.class);
 
@@ -74,6 +78,7 @@ public class HotelService {
 
         return hotels.stream().map(hotel -> {
             final var dto = new HotelAvailableDTO(hotel);
+            dto.setPicture(String.format("%s/%s", filesUrl, hotel.getPicture()));
             dto.appendServices(servicesByHotel.getOrDefault(hotel.getId(), List.of()));
             // Nullable
             dto.setAverageCalification(reviewsByHotel.get(hotel.getId()));
@@ -119,6 +124,7 @@ public class HotelService {
 
         return hotels.stream().map(hotel -> {
             final var dto = new HotelDTO(hotel);
+            dto.setPicture(String.format("%s/%s", filesUrl, hotel.getPicture()));
             dto.appendServices(servicesByHotel.getOrDefault(hotel.getId(), List.of()));
             // Nullable
             final Double calification = reviewsByHotel.get(hotel.getId());
