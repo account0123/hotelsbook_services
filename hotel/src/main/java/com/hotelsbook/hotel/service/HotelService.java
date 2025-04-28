@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 import com.hotelsbook.hotel.dto.HotelAvailableDTO;
+import com.hotelsbook.hotel.dto.HotelDTO;
 import com.hotelsbook.hotel.dto.HotelReviewDTO;
 import com.hotelsbook.hotel.dto.HotelServicesDTO;
+import com.hotelsbook.hotel.entity.Hotel;
 import com.hotelsbook.hotel.entity.HotelAvailable;
 import com.hotelsbook.hotel.repository.HotelRepository;
 
@@ -30,8 +32,10 @@ public class HotelService {
 
     private static final Logger logger = LoggerFactory.getLogger(HotelService.class);
 
-    // public List<HotelAvailableDTO> getAvailableHotelsWithServicesAndReviews(Date, Date, Integer) is too long
-    public List<HotelAvailableDTO> getAvailableHotels(Date startDate, Date endDate, Integer cityId, boolean withServices, boolean withReviews) {
+    // public List<HotelAvailableDTO> getAvailableHotelsWithServicesAndReviews(Date,
+    // Date, Integer) is too long
+    public List<HotelAvailableDTO> getAvailableHotels(Date startDate, Date endDate, Integer cityId,
+            boolean withServices, boolean withReviews) {
         final var hotels = repository.findAvailableHotelByCity(startDate, endDate, cityId);
         if (hotels.isEmpty()) {
             return List.of();
@@ -48,7 +52,7 @@ public class HotelService {
             if (e instanceof RestClientException) {
                 logger.error("Connection to services microservice failed", e);
             } else {
-                 logger.error("Unknown exception getting services for hotels", e);
+                logger.error("Unknown exception getting services for hotels", e);
             }
         }
 
@@ -59,12 +63,14 @@ public class HotelService {
             if (e instanceof RestClientException) {
                 logger.error("Connection to reviews microservice failed", e);
             } else {
-                 logger.error("Unknown exception getting reviews for hotels", e);
+                logger.error("Unknown exception getting reviews for hotels", e);
             }
         }
 
-        final var servicesByHotel = services.stream().collect(Collectors.toMap(HotelServicesDTO::getHotelId, HotelServicesDTO::getServices));
-        final var reviewsByHotel = reviews.stream().collect(Collectors.toMap(HotelReviewDTO::getHotelId, HotelReviewDTO::getAverageCalification));
+        final var servicesByHotel = services.stream()
+                .collect(Collectors.toMap(HotelServicesDTO::getHotelId, HotelServicesDTO::getServices));
+        final var reviewsByHotel = reviews.stream()
+                .collect(Collectors.toMap(HotelReviewDTO::getHotelId, HotelReviewDTO::getAverageCalification));
 
         return hotels.stream().map(hotel -> {
             final var dto = new HotelAvailableDTO(hotel);
@@ -75,21 +81,49 @@ public class HotelService {
         }).toList();
     }
 
-    public List<HotelAvailableDTO> getHotels(Date startDate, Date endDate, Integer cityId, boolean withServices, boolean withReviews) {
+    public List<HotelDTO> getHotels(Date startDate, Date endDate, Integer cityId, boolean withServices,
+            boolean withReviews) {
         final var hotels = repository.findHotelsByCity(startDate, endDate, cityId);
-        final var hotelIds = hotels.stream().map(HotelAvailable::getId).toList();
+        final var hotelIds = hotels.stream().map(Hotel::getId).toList();
 
-        final List<HotelServicesDTO> services = withServices ? serviceClient.getServicesForHotels(hotelIds) : List.of();
-        final List<HotelReviewDTO> reviews = withReviews ? reviewClient.getReviewsForHotels(hotelIds) : List.of();
+        List<HotelServicesDTO> services = List.of();
+        List<HotelReviewDTO> reviews = List.of();
 
-        final var servicesByHotel = services.stream().collect(Collectors.toMap(HotelServicesDTO::getHotelId, HotelServicesDTO::getServices));
-        final var reviewsByHotel = reviews.stream().collect(Collectors.toMap(HotelReviewDTO::getHotelId, HotelReviewDTO::getAverageCalification));
+        // Maneja errores de conexión, para prevenir que se devuelva un error 500
+        try {
+            if (withServices)
+                services = serviceClient.getServicesForHotels(hotelIds);
+        } catch (Exception e) {
+            if (e instanceof RestClientException) {
+                logger.error("Connection to services microservice failed", e);
+            } else {
+                logger.error("Unknown exception getting services for hotels", e);
+            }
+        }
+
+        try {
+            if (withReviews)
+                reviews = reviewClient.getReviewsForHotels(hotelIds);
+        } catch (Exception e) {
+            if (e instanceof RestClientException) {
+                logger.error("Connection to reviews microservice failed", e);
+            } else {
+                logger.error("Unknown exception getting reviews for hotels", e);
+            }
+        }
+
+        final var servicesByHotel = services.stream()
+                .collect(Collectors.toMap(HotelServicesDTO::getHotelId, HotelServicesDTO::getServices));
+        final var reviewsByHotel = reviews.stream()
+                .collect(Collectors.toMap(HotelReviewDTO::getHotelId, HotelReviewDTO::getAverageCalification));
 
         return hotels.stream().map(hotel -> {
-            final var dto = new HotelAvailableDTO(hotel);
+            final var dto = new HotelDTO(hotel);
             dto.appendServices(servicesByHotel.getOrDefault(hotel.getId(), List.of()));
             // Nullable
-            dto.setAverageCalification(reviewsByHotel.get(hotel.getId()));
+            final Double calification = reviewsByHotel.get(hotel.getId());
+            if (calification != null)
+                dto.setAverageCalification(calification);
             return dto;
         }).toList();
     }

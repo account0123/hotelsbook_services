@@ -1,10 +1,14 @@
 package com.hotelsbook.hotel.entity;
 
+import java.util.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
-public class HotelAvailable {
+public class Hotel {
     
     @Id
     private Long id;
@@ -15,9 +19,13 @@ public class HotelAvailable {
     private String street;
     private String number;
     private String cityName;
-    HotelAvailable() {}
+     
+    @Temporal(TemporalType.DATE)
+    private Date available;
 
-    public HotelAvailable(String name, double price, String description, String picture, String street, String number, String cityName) {
+    Hotel() {}
+
+    public Hotel(String name, double price, String description, String picture, String street, String number, String cityName, Date available) {
         this.name = name;
         this.price = price;
         this.description = description;
@@ -25,6 +33,7 @@ public class HotelAvailable {
         this.street = street;
         this.number = number;
         this.cityName = cityName;
+        this.available = available;
     }
 
     public Long getId() {
@@ -53,6 +62,10 @@ public class HotelAvailable {
 
     public String getNumber() {
         return number;
+    }
+
+    public Date getAvailable() {
+        return available;
     }
 
     public String getCityName() {

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.hotelsbook.hotel.entity.Hotel;
 import com.hotelsbook.hotel.entity.HotelAvailable;
 
 @Repository
@@ -20,7 +21,7 @@ public interface HotelRepository extends JpaRepository<HotelAvailable, Long> {
     );
 
     @Query(value="call GetHotelsByCity(:startDate, :endDate, :cityId)", nativeQuery = true)
-    List<HotelAvailable> findHotelsByCity(
+    List<Hotel> findHotelsByCity(
         @Param("startDate") Date startDate,
         @Param("endDate") Date endDate,
         @Param("cityId") int city

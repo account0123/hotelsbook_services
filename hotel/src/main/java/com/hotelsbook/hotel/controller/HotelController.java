@@ -34,8 +34,8 @@ public class HotelController {
             @RequestParam Integer cityId,
             @RequestParam(value = "include_services", defaultValue = "false") boolean withServices,
             @RequestParam(value = "include_reviews", defaultValue = "false") boolean withReviews) {
-        logger.info("startDate %s, endDate %s, cityId %s", startDate, endDate, cityId);
-        logger.info("include_services %s, include_reviews %s", withServices, withReviews);
+        logger.info("startDate {}, endDate {}, cityId {}", startDate, endDate, cityId);
+        logger.info("include_services {}, include_reviews {}", withServices, withReviews);
         try {
             final var availableHotels = hotelService.getAvailableHotels(startDate, endDate, cityId, withServices,
                     withReviews);
@@ -58,8 +58,8 @@ public class HotelController {
             @RequestParam Integer cityId,
             @RequestParam(value = "include_services", defaultValue = "false") boolean withServices,
             @RequestParam(value = "include_reviews", defaultValue = "false") boolean withReviews) {
-        logger.info("startDate %s, endDate %s, cityId %s", startDate, endDate, cityId);
-        logger.info("include_services %s, include_reviews %s", withServices, withReviews);
+        logger.info("startDate {}, endDate {}, cityId {}", startDate, endDate, cityId);
+        logger.info("include_services {}, include_reviews {}", withServices, withReviews);
         try {
             final var hotels = hotelService.getHotels(startDate, endDate, cityId, withServices,
                     withReviews);
