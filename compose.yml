@@ -1,11 +1,32 @@
 version: '3.8'
 
 services:
+  database:
+    image: mysql:8.0
+    container_name: database
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-}
+      MYSQL_DATABASE: db_hotelsbook
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - ./migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - microservices
   hotel-api:
     build:
       context: ./hotel
       dockerfile: Dockerfile
     container_name: api
+    env_file: .env
+    environment:
+      DB_URL: jdbc:mysql://database:3306/db_hotelsbook
+    depends_on:
+      database:
+        condition: service_healthy
     ports:
       - "8000:8000"
     networks:
@@ -15,6 +36,12 @@ services:
       context: ./services
       dockerfile: Dockerfile
     container_name: hotel-services
+    env_file: .env
+    environment:
+      DB_URL: jdbc:mysql://database:3306/db_hotelsbook
+    depends_on:
+      database:
+        condition: service_healthy
     ports:
       - "8001:8001"
     networks:
@@ -25,6 +52,12 @@ services:
       context: ./reviews
       dockerfile: Dockerfile
     container_name: hotel-reviews
+    env_file: .env
+    environment:
+      DB_URL: jdbc:mysql://database:3306/db_hotelsbook
+    depends_on:
+      database:
+        condition: service_healthy
     ports:
       - "8002:8002"
     networks:
