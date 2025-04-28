@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  hotel-api:
+    build:
+      context: ./hotel
+      dockerfile: Dockerfile
+    container_name: api
+    ports:
+      - "8000:8000"
+    networks:
+      - microservices
+  hotel-services-api:
+    build:
+      context: ./services
+      dockerfile: Dockerfile
+    container_name: hotel-services
+    ports:
+      - "8001:8001"
+    networks:
+      - microservices
+
+  hotel-reviews-api:
+    build:
+      context: ./reviews
+      dockerfile: Dockerfile
+    container_name: hotel-reviews
+    ports:
+      - "8002:8002"
+    networks:
+      - microservices
+
+networks:
+  microservices:
+    driver: bridge
