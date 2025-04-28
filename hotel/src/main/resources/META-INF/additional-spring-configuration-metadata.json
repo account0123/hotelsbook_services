@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "features.services.url",
+    "type": "java.lang.String",
+    "description": "URL services microservice"
+  },
+  {
+    "name": "features.reviews.url",
+    "type": "java.lang.String",
+    "description": "URL to reviews microservice"
+  }
+]}
