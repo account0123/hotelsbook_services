@@ -4,7 +4,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestClientException;
 
 import com.hotelsbook.hotel.dto.HotelAvailableDTO;
 import com.hotelsbook.hotel.dto.HotelReviewDTO;
@@ -23,6 +26,8 @@ public class HotelService {
     @Autowired
     private HotelReviewClient reviewClient;
 
+    private static final Logger logger = LoggerFactory.getLogger(HotelService.class);
+
     // public List<HotelAvailableDTO> getAvailableHotelsWithServicesAndReviews(Date, Date, Integer) is too long
     public List<HotelAvailableDTO> getAvailableHotels(Date startDate, Date endDate, Integer cityId, boolean withServices, boolean withReviews) {
         final var hotels = repository.findAvailableHotelByCity(startDate, endDate, cityId);
@@ -30,9 +35,31 @@ public class HotelService {
             return List.of();
         }
         final var hotelIds = hotels.stream().map(HotelAvailable::getId).toList();
+        List<HotelServicesDTO> services = List.of();
+        List<HotelReviewDTO> reviews = List.of();
 
-        final List<HotelServicesDTO> services = withServices ? serviceClient.getServicesForHotels(hotelIds) : List.of();
-        final List<HotelReviewDTO> reviews = withReviews ? reviewClient.getReviewsForHotels(hotelIds) : List.of();
+        // Maneja errores de conexión, para prevenir que se devuelva un error 500
+        try {
+            if (withServices)
+                services = serviceClient.getServicesForHotels(hotelIds);
+        } catch (Exception e) {
+            if (e instanceof RestClientException) {
+                logger.error("Connection to services microservice failed", e);
+            } else {
+                 logger.error("Unknown exception getting services for hotels", e);
+            }
+        }
+
+        try {
+            if (withReviews)
+                reviews = reviewClient.getReviewsForHotels(hotelIds);
+        } catch (Exception e) {
+            if (e instanceof RestClientException) {
+                logger.error("Connection to reviews microservice failed", e);
+            } else {
+                 logger.error("Unknown exception getting reviews for hotels", e);
+            }
+        }
 
         final var servicesByHotel = services.stream().collect(Collectors.toMap(HotelServicesDTO::getHotelId, HotelServicesDTO::getServices));
         final var reviewsByHotel = reviews.stream().collect(Collectors.toMap(HotelReviewDTO::getHotelId, HotelReviewDTO::getAverageCalification));
