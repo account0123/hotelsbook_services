@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 import com.hotelsbook.hotel.dto.HotelAvailableDTO;
@@ -15,6 +16,7 @@ import com.hotelsbook.hotel.dto.HotelServicesDTO;
 import com.hotelsbook.hotel.entity.HotelAvailable;
 import com.hotelsbook.hotel.repository.HotelRepository;
 
+@Service
 public class HotelService {
 
     @Autowired
