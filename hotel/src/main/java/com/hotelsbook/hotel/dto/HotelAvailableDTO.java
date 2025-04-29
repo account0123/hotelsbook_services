@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import com.hotelsbook.hotel.entity.HotelAvailable;
 
+import jakarta.annotation.Nullable;
 public class HotelAvailableDTO {
 
     private final Long id;
@@ -16,9 +17,10 @@ public class HotelAvailableDTO {
     private String number;
     private String cityName;
     private List<ServiceDTO> services;
-    private double averageCalification;
+    @Nullable
+    private Double averageCalification;
 
-    public HotelAvailableDTO(HotelAvailable hotel, List<ServiceDTO> services, double averageCalification) {
+    public HotelAvailableDTO(HotelAvailable hotel, List<ServiceDTO> services, Double averageCalification) {
         this(hotel);
         this.services = services;
         this.averageCalification = averageCalification;
@@ -85,11 +87,11 @@ public class HotelAvailableDTO {
         return services;
     }
 
-    public double getAverageCalification() {
+    public Double getAverageCalification() {
         return averageCalification;
     }
 
-    public void setAverageCalification(double averageCalification) {
+    public void setAverageCalification(Double averageCalification) {
         this.averageCalification = averageCalification;
     }
 }

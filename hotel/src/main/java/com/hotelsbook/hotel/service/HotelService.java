@@ -81,7 +81,8 @@ public class HotelService {
             dto.setPicture(String.format("%s/%s", filesUrl, hotel.getPicture()));
             dto.appendServices(servicesByHotel.getOrDefault(hotel.getId(), List.of()));
             // Nullable
-            dto.setAverageCalification(reviewsByHotel.get(hotel.getId()));
+            final Double calification = reviewsByHotel.get(hotel.getId());
+            dto.setAverageCalification(calification);
             return dto;
         }).toList();
     }
@@ -128,8 +129,7 @@ public class HotelService {
             dto.appendServices(servicesByHotel.getOrDefault(hotel.getId(), List.of()));
             // Nullable
             final Double calification = reviewsByHotel.get(hotel.getId());
-            if (calification != null)
-                dto.setAverageCalification(calification);
+            dto.setAverageCalification(calification);
             return dto;
         }).toList();
     }
