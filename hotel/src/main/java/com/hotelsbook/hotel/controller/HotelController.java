@@ -30,13 +30,16 @@ public class HotelController {
     @GetMapping("/available")
     public ResponseEntity<?> getAvailableHotels(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
             @RequestParam Integer cityId,
-            @RequestParam(value = "include_services", defaultValue = "false") boolean withServices,
-            @RequestParam(value = "include_reviews", defaultValue = "false") boolean withReviews) {
+            @RequestParam(required = false) Boolean withServices,
+            @RequestParam(required = false) Boolean withReviews) {
         logger.info("startDate {}, endDate {}, cityId {}", startDate, endDate, cityId);
-        logger.info("include_services {}, include_reviews {}", withServices, withReviews);
+        logger.info("withServices {}, withreviews {}", withServices, withReviews);
         try {
+            // null values are parsed as true (present)
+            withServices = withServices == null ? true : withServices;
+            withReviews = withReviews == null ? true : withReviews;
             final var availableHotels = hotelService.getAvailableHotels(startDate, endDate, cityId, withServices,
                     withReviews);
             if (availableHotels.isEmpty()) {
@@ -53,14 +56,17 @@ public class HotelController {
 
     @GetMapping
     public ResponseEntity<?> getHotels(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
             @RequestParam Integer cityId,
-            @RequestParam(value = "include_services", defaultValue = "false") boolean withServices,
-            @RequestParam(value = "include_reviews", defaultValue = "false") boolean withReviews) {
+            @RequestParam(required = false) Boolean withServices,
+            @RequestParam(required = false) Boolean withReviews) {
         logger.info("startDate {}, endDate {}, cityId {}", startDate, endDate, cityId);
-        logger.info("include_services {}, include_reviews {}", withServices, withReviews);
+        logger.info("withServices {}, withreviews {}", withServices, withReviews);
         try {
+            // null values are parsed as true (present)
+            withServices = withServices == null ? true : withServices;
+            withReviews = withReviews == null ? true : withReviews;
             final var hotels = hotelService.getHotels(startDate, endDate, cityId, withServices,
                     withReviews);
             if (hotels.isEmpty()) {
